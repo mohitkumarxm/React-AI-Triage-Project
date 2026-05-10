@@ -1,25 +1,40 @@
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useInboxQuery } from "@/features/inbox/use-inbox-query";
 
-import { setSelectedItemId } from "@/store/slices/inbox-slice";
+import { AppLayout } from "@/components/layout/app-layout";
+import { SidebarLayout } from "@/components/layout/sidebar-layout";
+import { DetailLayout } from "@/components/layout/detail-layout";
+
+import { InboxToolbar } from "@/components/inbox/inbox-toolbar";
+import { InboxList } from "@/components/inbox/inbox-list";
+
+import { DetailPlaceholder } from "@/components/detail/detail-placeholder";
 
 function App() {
-  const dispatch = useAppDispatch();
-
-  const selectedItemId = useAppSelector((state) => state.inbox.selectedItemId);
+  const { data, isLoading, error } = useInboxQuery();
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="text-3xl font-bold">AI Triage Inbox</h1>
+    <AppLayout
+      sidebar={
+        <SidebarLayout>
+          <InboxToolbar />
 
-      <button
-        className="rounded bg-blue-600 px-4 py-2"
-        onClick={() => dispatch(setSelectedItemId("itm_001"))}
-      >
-        Select Item
-      </button>
+          {isLoading && (
+            <div className="p-4 text-slate-400">Loading inbox...</div>
+          )}
 
-      <p>{selectedItemId}</p>
-    </div>
+          {error && (
+            <div className="p-4 text-red-400">Failed to load inbox.</div>
+          )}
+
+          {data && <InboxList items={data} />}
+        </SidebarLayout>
+      }
+      detail={
+        <DetailLayout>
+          <DetailPlaceholder />
+        </DetailLayout>
+      }
+    />
   );
 }
 
