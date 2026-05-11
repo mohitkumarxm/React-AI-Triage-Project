@@ -14,6 +14,10 @@ const inboxSlice = createSlice({
   name: "inbox",
   initialState,
   reducers: {
+    markSelectedDone: (state) => {},
+    setSelectedIds: (state, action: PayloadAction<string[]>) => {
+      state.selectedIds = action.payload;
+    },
     setSelectedItemId: (state, action: PayloadAction<string | null>) => {
       state.selectedItemId = action.payload;
     },
@@ -34,7 +38,11 @@ const inboxSlice = createSlice({
   },
 });
 
-export const { setSelectedItemId, toggleSelectedId, clearSelectedIds } =
-  inboxSlice.actions;
+export const {
+  setSelectedItemId,
+  toggleSelectedId,
+  clearSelectedIds,
+  setSelectedIds,
+} = inboxSlice.actions;
 
 export default inboxSlice.reducer;

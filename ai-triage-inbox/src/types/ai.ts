@@ -18,6 +18,12 @@ export type AIResponse = {
   draft_reply: string;
 
   confidence: number;
+
+  processing_time_ms: number;
+
+  prompt_injection_detected: boolean;
+
+  reasoning: string[];
 };
 
 export type AIState = "idle" | "loading" | "success" | "error";
