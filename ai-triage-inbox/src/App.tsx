@@ -2,7 +2,11 @@ import { useMemo } from "react";
 
 import { useInboxQuery } from "@/features/inbox/use-inbox-query";
 
+import { useKeyboardNavigation } from "@/hooks/use-keyboard-navigation";
+
 import { useAppSelector } from "@/store/hooks";
+
+import type { InboxItem } from "@/types/inbox";
 
 import { AppLayout } from "@/components/layout/app-layout";
 import { SidebarLayout } from "@/components/layout/sidebar-layout";
@@ -23,10 +27,26 @@ function App() {
 
   const selectedItemId = useAppSelector((state) => state.inbox.selectedItemId);
 
-  const filteredItems = useMemo(() => {
+  const itemStatuses = useAppSelector((state) => state.inbox.itemStatuses);
+
+  /**
+   * Merge optimistic status updates
+   */
+  const mergedItems: InboxItem[] = useMemo(() => {
     if (!data) return [];
 
-    return data.filter((item) => {
+    return data.map((item) => ({
+      ...item,
+
+      status: itemStatuses[item.id] ?? item.status,
+    }));
+  }, [data, itemStatuses]);
+
+  /**
+   * Filtering
+   */
+  const filteredItems = useMemo(() => {
+    return mergedItems.filter((item) => {
       const matchesSearch =
         item.subject.toLowerCase().includes(filters.search.toLowerCase()) ||
         item.body.toLowerCase().includes(filters.search.toLowerCase()) ||
@@ -40,11 +60,22 @@ function App() {
 
       return matchesSearch && matchesStatus && matchesPriority;
     });
-  }, [data, filters]);
+  }, [mergedItems, filters]);
 
+  /**
+   * Selected Item
+   */
   const selectedItem = useMemo(() => {
-    return data?.find((item) => item.id === selectedItemId);
-  }, [data, selectedItemId]);
+    return mergedItems.find((item) => item.id === selectedItemId);
+  }, [mergedItems, selectedItemId]);
+
+  /**
+   * Keyboard Navigation
+   */
+  useKeyboardNavigation({
+    items: filteredItems,
+    selectedItemId,
+  });
 
   return (
     <AppLayout

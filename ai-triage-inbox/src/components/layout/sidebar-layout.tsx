@@ -1,9 +1,11 @@
-import type { ReactNode } from "react";
-
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 export function SidebarLayout({ children }: Props) {
-  return <div className="flex h-full flex-col overflow-hidden">{children}</div>;
+  return (
+    <div className="flex h-full flex-col overflow-hidden bg-slate-950">
+      {children}
+    </div>
+  );
 }

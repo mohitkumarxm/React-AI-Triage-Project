@@ -14,6 +14,7 @@ export function InboxFilters() {
   return (
     <div className="flex flex-col gap-3 border-b border-slate-800 p-4">
       <input
+        id="search-input"
         type="text"
         placeholder="Search messages..."
         value={search}

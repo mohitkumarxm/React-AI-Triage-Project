@@ -1,9 +1,7 @@
-import type { ReactNode } from "react";
-
 type Props = {
-  children: ReactNode;
+  children: React.ReactNode;
 };
 
 export function DetailLayout({ children }: Props) {
-  return <div className="h-full overflow-y-auto">{children}</div>;
+  return <div className="h-full overflow-hidden bg-slate-950">{children}</div>;
 }
