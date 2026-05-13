@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import { useStreamingText } from "@/features/ai/use-streaming-text";
 
 type Props = {
@@ -10,17 +12,35 @@ export function StreamingDraft({ text }: Props) {
     speed: 12,
   });
 
+  const [localDraft, setLocalDraft] = useState("");
+
+  const [hasUserEdited, setHasUserEdited] = useState(false);
+
+  useEffect(() => {
+    if (!hasUserEdited) {
+      setLocalDraft(streamedText);
+    }
+  }, [streamedText, hasUserEdited]);
+
   return (
     <div>
       <textarea
-        value={streamedText}
-        readOnly
-        className="min-h-[220px] w-full rounded border border-slate-700 bg-slate-900 p-3 text-sm"
+        value={localDraft}
+        onChange={(e) => {
+          setHasUserEdited(true);
+
+          setLocalDraft(e.target.value);
+        }}
+        className="min-h-[220px] w-full rounded border border-slate-700 bg-slate-900 p-3 text-sm outline-none focus:border-blue-500"
       />
 
       <div className="mt-3 flex items-center justify-between">
         <div className="text-xs text-slate-500">
-          {isStreaming ? "Generating..." : "Completed"}
+          {isStreaming
+            ? "Generating..."
+            : hasUserEdited
+              ? "Edited locally"
+              : "Completed"}
         </div>
 
         {isStreaming && (

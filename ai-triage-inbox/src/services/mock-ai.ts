@@ -2,21 +2,10 @@ import type { InboxItem } from "@/types/inbox";
 
 import type { AIResponse } from "@/types/ai";
 
-const MIN_DELAY = 800;
-const MAX_DELAY = 2200;
-
-const FAILURE_RATE = 0.12;
+import { seededBoolean, seededNumber } from "@/utils/deterministic";
 
 function delay(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function randomDelay() {
-  return Math.random() * (MAX_DELAY - MIN_DELAY) + MIN_DELAY;
-}
-
-function shouldFail() {
-  return Math.random() < FAILURE_RATE;
 }
 
 function detectCategory(item: InboxItem): AIResponse["category"] {
@@ -70,17 +59,22 @@ export async function generateAIResponse(
   item: InboxItem,
   signal?: AbortSignal,
 ): Promise<AIResponse> {
-  await delay(randomDelay());
+  const seed = item.id;
+
+  const latency = seededNumber(seed, 400, 1400);
+
+  await delay(latency);
 
   if (signal?.aborted) {
     throw new Error("Generation aborted");
   }
 
-  if (shouldFail()) {
+  const category = detectCategory(item);
+  const shouldFail = category === "Spam" && seededBoolean(seed, 0.5);
+
+  if (shouldFail) {
     throw new Error("AI generation failed.");
   }
-
-  const category = detectCategory(item);
 
   const priority = detectPriority(category);
 
@@ -106,9 +100,9 @@ Our team is currently reviewing the issue and will provide an update shortly.
 Best regards,
 Support Team`,
 
-    confidence: 0.87,
+    confidence: seededNumber(seed, 72, 96) / 100,
 
-    processing_time_ms: Math.floor(Math.random() * 1200) + 400,
+    processing_time_ms: latency,
 
     prompt_injection_detected: category === "Spam",
 

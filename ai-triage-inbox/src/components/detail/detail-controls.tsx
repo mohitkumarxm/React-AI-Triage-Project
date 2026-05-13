@@ -13,11 +13,14 @@ export function DetailControls({ status, priority }: Props) {
 
         <select
           value={status}
+          onChange={() => {}}
           className="rounded border border-slate-700 bg-slate-900 px-3 py-2"
         >
-          <option>New</option>
-          <option>In Progress</option>
-          <option>Done</option>
+          <option value="New">New</option>
+
+          <option value="In Progress">In Progress</option>
+
+          <option value="Done">Done</option>
         </select>
       </div>
 
@@ -26,11 +29,14 @@ export function DetailControls({ status, priority }: Props) {
 
         <select
           value={priority}
+          onChange={() => {}}
           className="rounded border border-slate-700 bg-slate-900 px-3 py-2"
         >
-          <option>P1</option>
-          <option>P2</option>
-          <option>P3</option>
+          <option value="P1">P1</option>
+
+          <option value="P2">P2</option>
+
+          <option value="P3">P3</option>
         </select>
       </div>
     </div>

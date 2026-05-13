@@ -1,18 +1,28 @@
+import { useMemo } from "react";
+
 import { useInboxQuery } from "@/features/inbox/use-inbox-query";
-import { InboxFilters } from "@/components/inbox/inbox-filters";
-import { InboxBulkActions } from "@/components/inbox/inbox-bulk-actions";
+
+import { useAppSelector } from "@/store/hooks";
+
 import { AppLayout } from "@/components/layout/app-layout";
 import { SidebarLayout } from "@/components/layout/sidebar-layout";
 import { DetailLayout } from "@/components/layout/detail-layout";
+
 import { InboxToolbar } from "@/components/inbox/inbox-toolbar";
 import { InboxList } from "@/components/inbox/inbox-list";
+import { InboxFilters } from "@/components/inbox/inbox-filters";
+import { InboxBulkActions } from "@/components/inbox/inbox-bulk-actions";
+
+import { MessageDetail } from "@/components/detail/message-detail";
 import { DetailPlaceholder } from "@/components/detail/detail-placeholder";
-import { useAppSelector } from "@/store/hooks";
-import { useMemo } from "react";
 
 function App() {
   const { data, isLoading, error } = useInboxQuery();
+
   const filters = useAppSelector((state) => state.filters);
+
+  const selectedItemId = useAppSelector((state) => state.inbox.selectedItemId);
+
   const filteredItems = useMemo(() => {
     if (!data) return [];
 
@@ -31,6 +41,11 @@ function App() {
       return matchesSearch && matchesStatus && matchesPriority;
     });
   }, [data, filters]);
+
+  const selectedItem = useMemo(() => {
+    return data?.find((item) => item.id === selectedItemId);
+  }, [data, selectedItemId]);
+
   return (
     <AppLayout
       sidebar={
@@ -58,7 +73,11 @@ function App() {
       }
       detail={
         <DetailLayout>
-          <DetailPlaceholder />
+          {selectedItem ? (
+            <MessageDetail item={selectedItem} />
+          ) : (
+            <DetailPlaceholder />
+          )}
         </DetailLayout>
       }
     />
